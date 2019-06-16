@@ -21,8 +21,8 @@ import { inject } from '@loopback/core';
 import { User, UserRegisterInput } from '../models';
 import { UserRepository, RegisterInput } from '../repositories';
 import { PasswordHasher } from '../services/hashPassword';
-import { PasswordHasherBindings } from '../keys';
-import { validateRegisterInput } from '../services/validator';
+import { PasswordHasherBindings, ValidateRegisterInputBindings } from '../keys';
+import { ValidateRegisterInput } from '../services/validator';
 import * as _ from "lodash";
 
 export class UserController {
@@ -32,6 +32,9 @@ export class UserController {
 
     @inject(PasswordHasherBindings.PASSWORD_HASHER)
     public passwordHasher: PasswordHasher,
+
+    @inject(ValidateRegisterInputBindings.VALIDATE_REFISTER_INPUT)
+    public validateRegisterInput: ValidateRegisterInput
   ) { }
 
   @post('/users', {
@@ -43,9 +46,7 @@ export class UserController {
     },
   })
   async create(@requestBody() user: UserRegisterInput): Promise<User> {
-    validateRegisterInput(user);
-    const existUser = await this.userRepository.findOne({ where: { username: user.username } });
-    if (existUser) throw new HttpErrors.UnprocessableEntity("Username exists");
+    this.validateRegisterInput.validate(user);
 
     const newUser = _.omit(user, ["password2"]);
     newUser.password = await this.passwordHasher.hashPassword(newUser.password);

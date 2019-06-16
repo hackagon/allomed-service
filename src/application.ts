@@ -10,8 +10,9 @@ import { ServiceMixin } from '@loopback/service-proxy';
 import * as path from 'path';
 import { MySequence } from './sequence';
 
-import { PasswordHasherBindings } from "./keys";
+import { PasswordHasherBindings, ValidateRegisterInputBindings } from "./keys";
 import { BcryptHasher } from "./services/hashPassword";
+import { ValidateRegisterInput } from './services/validator';
 
 export class AllomedService extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
@@ -43,5 +44,6 @@ export class AllomedService extends BootMixin(
     };
     this.bind(PasswordHasherBindings.ROUNDS).to(10);
     this.bind(PasswordHasherBindings.PASSWORD_HASHER).toClass(BcryptHasher);
+    this.bind(ValidateRegisterInputBindings.VALIDATE_REFISTER_INPUT).toClass(ValidateRegisterInput);
   }
 }
