@@ -16,8 +16,11 @@ import {
   del,
   requestBody,
 } from '@loopback/rest';
+import { inject } from '@loopback/core';
 import { User } from '../models';
 import { UserRepository } from '../repositories';
+import { PasswordHasher } from '../decorators/hashPassword';
+import { PasswordHasherBindings } from '../keys';
 
 import * as bcrypt from "bcryptjs";
 
@@ -25,6 +28,9 @@ export class UserController {
   constructor(
     @repository(UserRepository)
     public userRepository: UserRepository,
+
+    @inject(PasswordHasherBindings.PASSWORD_HASHER)
+    public passwordHasher: PasswordHasher,
   ) { }
 
   @post('/users', {
@@ -36,22 +42,8 @@ export class UserController {
     },
   })
   async create(@requestBody() user: User): Promise<User> {
-    const salt: string = await new Promise((resolve, reject) => {
-      bcrypt.genSalt(10, (err, salt) => {
-        if (err) return reject(err);
-        resolve(salt);
-      });
-    });
-
-    const hash: string = await new Promise((resolve, reject) => {
-      bcrypt.hash(user.password, salt, (err, hash) => {
-        if (err) reject(err);
-        resolve(hash);
-      });
-    });
-
-    user.password = hash;
-    return this.userRepository.create(user);
+    user.password = await this.passwordHasher.hashPassword(user.password);
+    return await this.userRepository.create(user);
   }
 
   @get('/users/count', {

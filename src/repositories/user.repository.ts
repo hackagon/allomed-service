@@ -3,6 +3,11 @@ import { User, UserRelations } from '../models';
 import { MongodbDataSource } from '../datasources';
 import { inject } from '@loopback/core';
 
+export interface Credentials {
+  email: string;
+  password: string;
+}
+
 export class UserRepository extends DefaultCrudRepository<
   User,
   typeof User.prototype.id,
