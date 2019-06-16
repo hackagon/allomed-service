@@ -585,6 +585,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/validator@^10.11.1":
+  version "10.11.1"
+  resolved "https://registry.yarnpkg.com/@types/validator/-/validator-10.11.1.tgz#76e983ce155261838463b73728856cf8bc628d53"
+  integrity sha512-bVhLqvb+5xUNWRFnuuecRVISTvsG6AdhrB2kb/tChgtuTTqARqlQ3rLhOPy8cINZEUB8PkR+goyWF6fWxg4iSw==
+
 "@typescript-eslint/eslint-plugin@^1.9.0":
   version "1.10.2"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-1.10.2.tgz#552fc64cfcb19c6162190360217c945e8faa330a"

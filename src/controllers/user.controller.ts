@@ -15,14 +15,15 @@ import {
   put,
   del,
   requestBody,
+  HttpErrors,
 } from '@loopback/rest';
 import { inject } from '@loopback/core';
-import { User } from '../models';
-import { UserRepository } from '../repositories';
-import { PasswordHasher } from '../decorators/hashPassword';
+import { User, UserRegisterInput } from '../models';
+import { UserRepository, RegisterInput } from '../repositories';
+import { PasswordHasher } from '../services/hashPassword';
 import { PasswordHasherBindings } from '../keys';
-
-import * as bcrypt from "bcryptjs";
+import { validateRegisterInput } from '../services/validator';
+import * as _ from "lodash";
 
 export class UserController {
   constructor(
@@ -41,9 +42,14 @@ export class UserController {
       },
     },
   })
-  async create(@requestBody() user: User): Promise<User> {
-    user.password = await this.passwordHasher.hashPassword(user.password);
-    return await this.userRepository.create(user);
+  async create(@requestBody() user: UserRegisterInput): Promise<User> {
+    validateRegisterInput(user);
+    const existUser = await this.userRepository.findOne({ where: { username: user.username } });
+    if (existUser) throw new HttpErrors.UnprocessableEntity("Username exists");
+
+    const newUser = _.omit(user, ["password2"]);
+    newUser.password = await this.passwordHasher.hashPassword(newUser.password);
+    return await this.userRepository.create(newUser);
   }
 
   @get('/users/count', {

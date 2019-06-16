@@ -1,5 +1,5 @@
 import { BindingKey } from '@loopback/context';
-import { PasswordHasher } from "./decorators/hashPassword";
+import { PasswordHasher } from "./services/hashPassword";
 
 export namespace PasswordHasherBindings {
   export const PASSWORD_HASHER = BindingKey.create<PasswordHasher>(

@@ -4,8 +4,16 @@ import { MongodbDataSource } from '../datasources';
 import { inject } from '@loopback/core';
 
 export interface Credentials {
-  email: string;
+  username: string;
   password: string;
+}
+
+export interface RegisterInput {
+  email: string;
+  username: string;
+  password: string;
+  password2: string;
+  isActive?: boolean;
 }
 
 export class UserRepository extends DefaultCrudRepository<

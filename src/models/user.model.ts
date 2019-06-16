@@ -47,3 +47,7 @@ export interface UserRelations {
 }
 
 export type UserWithRelations = User & UserRelations;
+
+export type UserRegisterInput = User & {
+  password2: string
+}

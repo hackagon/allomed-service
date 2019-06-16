@@ -1,6 +1,8 @@
-const application = require('./dist');
+const application = require('./dist10');
 
 module.exports = application;
+
+console.log("runnnnnnnnnnnnnnnnnnnnn")
 
 if (require.main === module) {
   // Run the application

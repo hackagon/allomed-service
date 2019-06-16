@@ -11,7 +11,7 @@ import * as path from 'path';
 import { MySequence } from './sequence';
 
 import { PasswordHasherBindings } from "./keys";
-import { BcryptHasher } from "./decorators/hashPassword";
+import { BcryptHasher } from "./services/hashPassword";
 
 export class AllomedService extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),

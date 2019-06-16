@@ -14,7 +14,7 @@
     "build:apidocs": "lb-apidocs",
     "build": "lb-tsc es2017 --outDir dist10",
     "build:watch": "lb-tsc --watch",
-    "clean": "lb-clean dist",
+    "clean": "lb-clean dist10",
     "lint": "npm run prettier:check && npm run eslint",
     "lint:fix": "npm run eslint:fix && npm run prettier:fix",
     "prettier:cli": "lb-prettier \"**/*.ts\" \"**/*.js\"",
@@ -23,15 +23,15 @@
     "eslint": "lb-eslint --report-unused-disable-directives .",
     "eslint:fix": "npm run eslint -- --fix",
     "pretest": "npm run clean && npm run build",
-    "test": "lb-mocha --allow-console-logs \"dist/__tests__\"",
+    "test": "lb-mocha --allow-console-logs \"dist10/__tests__\"",
     "posttest": "npm run lint",
-    "test:dev": "lb-mocha --allow-console-logs dist/__tests__/**/*.js && npm run posttest",
+    "test:dev": "lb-mocha --allow-console-logs dist10/__tests__/**/*.js && npm run posttest",
     "docker:build": "docker build -t allomed-service .",
     "docker:run": "docker run -p 3000:3000 -d allomed-service",
-    "migrate": "node ./dist/migrate",
+    "migrate": "node ./dist10/migrate",
     "prestart": "npm run build",
     "start": "node .",
-    "debug": "nodemon .",
+    "debug": "nodemon",
     "prepublishOnly": "npm run test"
   },
   "repository": {
@@ -43,7 +43,7 @@
     "README.md",
     "index.js",
     "index.d.ts",
-    "dist",
+    "dist10",
     "src",
     "!*/__tests__"
   ],
@@ -58,7 +58,8 @@
     "@loopback/service-proxy": "^1.2.0",
     "bcrypt": "^3.0.6",
     "bcryptjs": "^2.4.3",
-    "loopback-connector-mongodb": "^4.1.0"
+    "loopback-connector-mongodb": "^4.1.0",
+    "validator": "^11.0.0"
   },
   "devDependencies": {
     "@loopback/build": "^1.7.0",
@@ -66,6 +67,7 @@
     "@loopback/testlab": "^1.4.0",
     "@types/bcryptjs": "^2.4.2",
     "@types/node": "^10.11.2",
+    "@types/validator": "^10.11.1",
     "@typescript-eslint/eslint-plugin": "^1.9.0",
     "@typescript-eslint/parser": "^1.9.0",
     "eslint": "^5.16.0",
@@ -80,7 +82,8 @@
       "src/"
     ],
     "ignore": [
-      "dist/*"
+      "dist/*",
+      "dist10/*"
     ],
     "ext": "ts",
     "exec": "npm start"
