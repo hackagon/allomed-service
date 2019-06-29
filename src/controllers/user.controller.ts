@@ -15,13 +15,19 @@ import {
   put,
   del,
   requestBody,
-  HttpErrors,
 } from '@loopback/rest';
+import {
+  authenticate,
+  UserProfile,
+  AuthenticationBindings,
+  TokenService,
+  UserService,
+} from '@loopback/authentication';
 import { inject } from '@loopback/core';
 import { User, UserRegisterInput } from '../models';
-import { UserRepository, RegisterInput } from '../repositories';
+import { UserRepository, Credentials } from '../repositories';
 import { PasswordHasher } from '../services/hashPassword';
-import { PasswordHasherBindings, ValidateRegisterInputBindings } from '../keys';
+import { PasswordHasherBindings, ValidateRegisterInputBindings, UserServiceBindings, TokenServiceBindings } from '../keys';
 import { ValidateRegisterInput } from '../services/validator';
 import * as _ from "lodash";
 
@@ -34,7 +40,13 @@ export class UserController {
     public passwordHasher: PasswordHasher,
 
     @inject(ValidateRegisterInputBindings.VALIDATE_REFISTER_INPUT)
-    public validateRegisterInput: ValidateRegisterInput
+    public validateRegisterInput: ValidateRegisterInput,
+
+    @inject(UserServiceBindings.USER_SERVICE)
+    public userService: UserService<User, Credentials>,
+
+    // @inject(TokenServiceBindings.TOKEN_SERVICE)
+    // public jwtService: TokenService
   ) { }
 
   @post('/users', {
@@ -46,11 +58,27 @@ export class UserController {
     },
   })
   async create(@requestBody() user: UserRegisterInput): Promise<User> {
-    this.validateRegisterInput.validate(user);
+    await this.validateRegisterInput.validate(user);
 
     const newUser = _.omit(user, ["password2"]);
     newUser.password = await this.passwordHasher.hashPassword(newUser.password);
     return await this.userRepository.create(newUser);
+  }
+
+  @post('/users/login', {
+    responses: {
+      '200': {
+        description: 'User model instance',
+        content: { 'application/x-www-form-urlencoded': { schema: { 'x-ts-type': 'object' } } },
+      },
+    },
+  })
+  async login(@requestBody() credentials: Credentials): Promise<{ token: string }> {
+    const user = await this.userService.verifyCredentials(credentials);
+    const userProfile = this.userService.convertToUserProfile(user);
+    // const token = await this.jwtService.generateToken(userProfile);
+
+    return { token: "jsncjkfn" };
   }
 
   @get('/users/count', {
