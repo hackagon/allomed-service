@@ -48,5 +48,5 @@ export class JWTService implements TokenService {
     } catch (error) {
       throw new HttpErrors.Unauthorized("Error when generate token");
     }
-  };
+  }
 }
