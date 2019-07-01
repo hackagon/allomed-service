@@ -8,7 +8,9 @@ import {
   RestBindings,
   Send,
   SequenceHandler,
+  HttpErrors
 } from '@loopback/rest';
+import { AuthorizatonBindings, AuthorizeFn } from './authorization';
 
 const SequenceActions = RestBindings.SequenceActions;
 
@@ -19,6 +21,12 @@ export class MySequence implements SequenceHandler {
     @inject(SequenceActions.INVOKE_METHOD) protected invoke: InvokeMethod,
     @inject(SequenceActions.SEND) public send: Send,
     @inject(SequenceActions.REJECT) public reject: Reject,
+    // @inject(AuthenticationBindings.AUTH_ACTION)
+    // protected authenticateRequest: AuthenticateFn,
+    // @inject(AuthorizatonBindings.USER_PERMISSIONS)
+    // protected fetchUserPermissons: UserPermissionsFn,
+    // @inject(AuthorizatonBindings.AUTHORIZE_ACTION)
+    // protected checkAuthorization: AuthorizeFn,
   ) { }
 
   async handle(context: RequestContext) {
@@ -27,6 +35,23 @@ export class MySequence implements SequenceHandler {
       const route = this.findRoute(request);
       const args = await this.parseParams(request, route);
       const result = await this.invoke(route, args);
+      this.send(response, result);
+      // Do authentication of the user and fetch user permissions below
+      // const authUser: AuthResponse = await this.authenticateRequest(request);
+      // Parse and calculate user permissions based on role and user level
+      // const permissions: PermissionKey[] = this.fetchUserPermissons(
+      // authUser.permissions,
+      // authUser.role.permissions,
+      // );
+      // This is main line added to sequence
+      // where we are invoking the authorize action function to check for access
+      // const isAccessAllowed: boolean = await this.checkAuthorization(
+      //   permissions,
+      // );
+      // if (!isAccessAllowed) {
+      //   throw new HttpErrors.Forbidden(AuthorizeErrorKeys.NotAllowedAccess);
+      // }
+      // const result = await this.invoke(route, args);
       this.send(response, result);
     } catch (err) {
       this.reject(context, err);

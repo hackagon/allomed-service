@@ -13,7 +13,7 @@ export namespace PasswordHasherBindings {
 }
 
 export namespace ValidateRegisterInputBindings {
-  export const VALIDATE_REFISTER_INPUT = BindingKey.create<ValidateRegisterInput>(
+  export const VALIDATE_REGISTER_INPUT = BindingKey.create<ValidateRegisterInput>(
     'services.validator'
   );
 }
@@ -32,7 +32,7 @@ export namespace TokenServiceBindings {
     'authentication.jwt.expires.in'
   );
   export const TOKEN_SERVICE = BindingKey.create<TokenService>(
-    'services.hasher',
+    'authentication.jwt.tokenservice',
   );
 }
 

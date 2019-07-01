@@ -26,7 +26,7 @@ import {
 import { inject } from '@loopback/core';
 import { User, UserRegisterInput } from '../models';
 import { UserRepository, Credentials } from '../repositories';
-import { PasswordHasher } from '../services/hashPassword';
+import { PasswordHasher, BcryptHasher } from '../services/hashPassword';
 import { PasswordHasherBindings, ValidateRegisterInputBindings, UserServiceBindings, TokenServiceBindings } from '../keys';
 import { ValidateRegisterInput } from '../services/validator';
 import * as _ from "lodash";
@@ -39,14 +39,14 @@ export class UserController {
     @inject(PasswordHasherBindings.PASSWORD_HASHER)
     public passwordHasher: PasswordHasher,
 
-    @inject(ValidateRegisterInputBindings.VALIDATE_REFISTER_INPUT)
+    @inject(ValidateRegisterInputBindings.VALIDATE_REGISTER_INPUT)
     public validateRegisterInput: ValidateRegisterInput,
 
     @inject(UserServiceBindings.USER_SERVICE)
     public userService: UserService<User, Credentials>,
 
-    // @inject(TokenServiceBindings.TOKEN_SERVICE)
-    // public jwtService: TokenService
+    @inject(TokenServiceBindings.TOKEN_SERVICE)
+    public jwtService: TokenService
   ) { }
 
   @post('/users', {
@@ -73,12 +73,12 @@ export class UserController {
       },
     },
   })
-  async login(@requestBody() credentials: Credentials): Promise<{ token: string }> {
+  async login(@requestBody() credentials: Credentials): Promise<{ success: boolean, token: string }> {
     const user = await this.userService.verifyCredentials(credentials);
     const userProfile = this.userService.convertToUserProfile(user);
-    // const token = await this.jwtService.generateToken(userProfile);
+    const token = await this.jwtService.generateToken(userProfile);
 
-    return { token: "jsncjkfn" };
+    return { success: true, token };
   }
 
   @get('/users/count', {

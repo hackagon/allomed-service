@@ -6,6 +6,12 @@ import { inject, DefaultConfigurationResolver } from "@loopback/core";
 import { PasswordHasherBindings } from "../keys";
 import { PasswordHasher } from "./hashPassword";
 import { HttpErrors } from "@loopback/rest";
+import * as _ from "lodash";
+
+interface TokenPayload extends UserProfile {
+  id: string;
+  userType: string;
+}
 
 export class MyUserService implements UserService<User, Credentials> {
   constructor(
@@ -20,7 +26,6 @@ export class MyUserService implements UserService<User, Credentials> {
 
     if (!foundUser) throw new HttpErrors.NotFound("User does not found");
 
-    console.log(this.passwordHasher);
     const passwordMatched = await this.passwordHasher.comparePassword(
       credentials.password,
       foundUser.password
@@ -31,7 +36,7 @@ export class MyUserService implements UserService<User, Credentials> {
     return foundUser;
   }
 
-  convertToUserProfile(user: User): UserProfile {
-    return { id: user._id, name: user.username };
+  convertToUserProfile(user: User): TokenPayload {
+    return { id: user.id, name: user.username, userType: user.userType };
   }
 }

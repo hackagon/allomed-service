@@ -41,6 +41,7 @@ export class JWTService implements TokenService {
     let token: string;
 
     try {
+      console.log(userProfile);
       token = await jwt.sign(userProfile, this.jwtSecretKey, {
         expiresIn: this.jwtExpiresIn
       });

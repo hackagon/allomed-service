@@ -15,6 +15,7 @@ import { BcryptHasher } from "./services/hashPassword";
 import { ValidateRegisterInput } from './services/validator';
 import { MyUserService } from './services/userService';
 import { JWTService } from './services/jwtService';
+import { AuthorizationComponent } from "./authorization/component";
 
 export class AllomedService extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
@@ -33,6 +34,7 @@ export class AllomedService extends BootMixin(
       path: '/explorer',
     });
     this.component(RestExplorerComponent);
+    this.component(AuthorizationComponent);
 
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here
@@ -48,7 +50,7 @@ export class AllomedService extends BootMixin(
 
     this.bind(PasswordHasherBindings.ROUNDS).to(10);
     this.bind(PasswordHasherBindings.PASSWORD_HASHER).toClass(BcryptHasher);
-    this.bind(ValidateRegisterInputBindings.VALIDATE_REFISTER_INPUT).toClass(ValidateRegisterInput);
+    this.bind(ValidateRegisterInputBindings.VALIDATE_REGISTER_INPUT).toClass(ValidateRegisterInput);
     this.bind(UserServiceBindings.USER_SERVICE).toClass(MyUserService);
 
     this.bind(TokenServiceBindings.SECRET_KEY).to(TokenServiceConstants.SECRET_KEY);

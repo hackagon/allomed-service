@@ -1,4 +1,5 @@
 import { Entity, model, property } from '@loopback/repository';
+import { UserPermission } from "../authorization/index";
 
 @model({ settings: { strict: false } })
 export class User extends Entity {
@@ -6,7 +7,7 @@ export class User extends Entity {
     type: 'string',
     id: true,
   })
-  id?: string;
+  id: string;
 
   @property({
     type: 'string',
@@ -25,6 +26,15 @@ export class User extends Entity {
     required: true,
   })
   email: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  userType: string;
+
+  @property.array(String)
+  permissions: UserPermission[];
 
   @property({
     type: 'boolean',
