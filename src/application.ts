@@ -10,19 +10,26 @@ import { ServiceMixin } from '@loopback/service-proxy';
 import * as path from 'path';
 import { MySequence } from './sequence';
 
+import { AuthenticationComponent, registerAuthenticationStrategy } from "@loopback/authentication";
+
 import { PasswordHasherBindings, ValidateRegisterInputBindings, UserServiceBindings, TokenServiceBindings, TokenServiceConstants } from "./keys";
 import { BcryptHasher } from "./services/hashPassword";
 import { ValidateRegisterInput } from './services/validator';
 import { MyUserService } from './services/userService';
 import { JWTService } from './services/jwtService';
+import { JWTStrategy } from './authentication/jwt-strategy';
 import { AuthorizationComponent } from "./authorization/component";
 
 export class AllomedService extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
-  constructor(options: ApplicationConfig = {}) {
+  constructor(options?: ApplicationConfig) {
     super(options);
 
+    this.setUpBindings();
+
+    this.component(AuthenticationComponent);
+    registerAuthenticationStrategy(this, JWTStrategy);
     // Set up the custom sequence
     this.sequence(MySequence);
 
@@ -34,6 +41,8 @@ export class AllomedService extends BootMixin(
       path: '/explorer',
     });
     this.component(RestExplorerComponent);
+
+
     this.component(AuthorizationComponent);
 
     this.projectRoot = __dirname;
@@ -47,7 +56,9 @@ export class AllomedService extends BootMixin(
       },
     };
 
+  }
 
+  setUpBindings(): void {
     this.bind(PasswordHasherBindings.ROUNDS).to(10);
     this.bind(PasswordHasherBindings.PASSWORD_HASHER).toClass(BcryptHasher);
     this.bind(ValidateRegisterInputBindings.VALIDATE_REGISTER_INPUT).toClass(ValidateRegisterInput);

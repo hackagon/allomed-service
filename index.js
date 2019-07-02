@@ -2,13 +2,11 @@ const application = require('./dist10');
 
 module.exports = application;
 
-console.log("runnnnnnnnnnnnnnnnnnnnn")
-
 if (require.main === module) {
   // Run the application
   const config = {
     rest: {
-      port: +(process.env.PORT || 3000),
+      port: +(process.env.PORT || 3456),
       host: process.env.HOST,
       openApiSpec: {
         // useful when used with OASGraph to locate your application

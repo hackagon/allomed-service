@@ -89,6 +89,7 @@ export class UserController {
       },
     },
   })
+  @authenticate('jwt')
   async count(
     @param.query.object('where', getWhereSchemaFor(User)) where?: Where<User>,
   ): Promise<Count> {
@@ -107,6 +108,7 @@ export class UserController {
       },
     },
   })
+  @authenticate('unknown')
   async find(
     @param.query.object('filter', getFilterSchemaFor(User)) filter?: Filter<User>,
   ): Promise<User[]> {

@@ -10,7 +10,13 @@ import {
   SequenceHandler,
   HttpErrors
 } from '@loopback/rest';
-import { AuthorizatonBindings, AuthorizeFn } from './authorization';
+import { AuthorizatonBindings, AuthorizeFn, UserPermissionsFn, PermissionKey, AuthorizeErrorKeys } from './authorization';
+import {
+  AuthenticationBindings,
+  AuthenticateFn,
+  AUTHENTICATION_STRATEGY_NOT_FOUND,
+  USER_PROFILE_NOT_FOUND,
+} from '@loopback/authentication';
 
 const SequenceActions = RestBindings.SequenceActions;
 
@@ -21,27 +27,29 @@ export class MySequence implements SequenceHandler {
     @inject(SequenceActions.INVOKE_METHOD) protected invoke: InvokeMethod,
     @inject(SequenceActions.SEND) public send: Send,
     @inject(SequenceActions.REJECT) public reject: Reject,
-    // @inject(AuthenticationBindings.AUTH_ACTION)
-    // protected authenticateRequest: AuthenticateFn,
-    // @inject(AuthorizatonBindings.USER_PERMISSIONS)
-    // protected fetchUserPermissons: UserPermissionsFn,
-    // @inject(AuthorizatonBindings.AUTHORIZE_ACTION)
-    // protected checkAuthorization: AuthorizeFn,
+    @inject(AuthorizatonBindings.AUTHORIZE_ACTION)
+    protected authorizeRequest: AuthorizeFn,
+    @inject(AuthorizatonBindings.USER_PERMISSIONS)
+    protected fetchUserPermissons: UserPermissionsFn,
+    @inject(AuthorizatonBindings.AUTHORIZE_ACTION)
+    protected checkAuthorization: AuthorizeFn,
+    @inject(AuthenticationBindings.AUTH_ACTION)
+    protected authenticateRequest: AuthenticateFn
   ) { }
 
   async handle(context: RequestContext) {
     try {
       const { request, response } = context;
+      const test = await this.authenticateRequest(request);
+      console.log("test", test);
       const route = this.findRoute(request);
       const args = await this.parseParams(request, route);
-      const result = await this.invoke(route, args);
-      this.send(response, result);
-      // Do authentication of the user and fetch user permissions below
-      // const authUser: AuthResponse = await this.authenticateRequest(request);
+
+      // const authUser: any = await this.authorizeRequest(request);
       // Parse and calculate user permissions based on role and user level
       // const permissions: PermissionKey[] = this.fetchUserPermissons(
-      // authUser.permissions,
-      // authUser.role.permissions,
+      //   authUser.permissions,
+      //   authUser.role.permissions,
       // );
       // This is main line added to sequence
       // where we are invoking the authorize action function to check for access
@@ -51,9 +59,15 @@ export class MySequence implements SequenceHandler {
       // if (!isAccessAllowed) {
       //   throw new HttpErrors.Forbidden(AuthorizeErrorKeys.NotAllowedAccess);
       // }
-      // const result = await this.invoke(route, args);
+      const result = await this.invoke(route, args);
       this.send(response, result);
     } catch (err) {
+      if (
+        err.code === AUTHENTICATION_STRATEGY_NOT_FOUND ||
+        err.code === USER_PROFILE_NOT_FOUND
+      ) {
+        Object.assign(err, { statusCode: 401 /* Unauthorized */ });
+      }
       this.reject(context, err);
     }
   }
