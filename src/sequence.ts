@@ -40,9 +40,9 @@ export class MySequence implements SequenceHandler {
   async handle(context: RequestContext) {
     try {
       const { request, response } = context;
-      const test = await this.authenticateRequest(request);
-      console.log("test", test);
       const route = this.findRoute(request);
+
+      await this.authenticateRequest(request);
       const args = await this.parseParams(request, route);
 
       // const authUser: any = await this.authorizeRequest(request);
@@ -72,3 +72,4 @@ export class MySequence implements SequenceHandler {
     }
   }
 }
+
