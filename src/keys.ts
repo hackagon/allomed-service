@@ -26,13 +26,13 @@ export namespace UserServiceBindings {
 
 export namespace TokenServiceBindings {
   export const SECRET_KEY = BindingKey.create<string>(
-    'authentication.jwt.secret.key'
+    'authentication.secret.key'
   );
   export const TOKEN_EXPIRES_IN = BindingKey.create<number>(
-    'authentication.jwt.expires.in'
+    'authentication.token.expires.in'
   );
   export const TOKEN_SERVICE = BindingKey.create<TokenService>(
-    'authentication.jwt.tokenservice',
+    'authentication.token.service',
   );
 }
 

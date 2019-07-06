@@ -29,7 +29,9 @@ import { UserRepository, Credentials } from '../repositories';
 import { PasswordHasher, BcryptHasher } from '../services/hashPassword';
 import { PasswordHasherBindings, ValidateRegisterInputBindings, UserServiceBindings, TokenServiceBindings } from '../keys';
 import { ValidateRegisterInput } from '../services/validator';
+import { authorize } from "../authorization/decorators/authorize.decorator";
 import * as _ from "lodash";
+import { PermissionKey } from '../authorization';
 
 export class UserController {
   constructor(
@@ -90,6 +92,7 @@ export class UserController {
     },
   })
   @authenticate('jwt')
+  @authorize([PermissionKey.ViewCount])
   async count(
     @param.query.object('where', getWhereSchemaFor(User)) where?: Where<User>,
   ): Promise<Count> {

@@ -16,7 +16,9 @@ import {
   AuthenticateFn,
   AUTHENTICATION_STRATEGY_NOT_FOUND,
   USER_PROFILE_NOT_FOUND,
+  UserProfile,
 } from '@loopback/authentication';
+import * as _ from "lodash";
 
 const SequenceActions = RestBindings.SequenceActions;
 
@@ -41,24 +43,26 @@ export class MySequence implements SequenceHandler {
     try {
       const { request, response } = context;
       const route = this.findRoute(request);
-
-      await this.authenticateRequest(request);
       const args = await this.parseParams(request, route);
 
-      // const authUser: any = await this.authorizeRequest(request);
-      // Parse and calculate user permissions based on role and user level
-      // const permissions: PermissionKey[] = this.fetchUserPermissons(
-      //   authUser.permissions,
-      //   authUser.role.permissions,
-      // );
-      // This is main line added to sequence
-      // where we are invoking the authorize action function to check for access
-      // const isAccessAllowed: boolean = await this.checkAuthorization(
-      //   permissions,
-      // );
-      // if (!isAccessAllowed) {
-      //   throw new HttpErrors.Forbidden(AuthorizeErrorKeys.NotAllowedAccess);
-      // }
+      const authUser = await this.authenticateRequest(request);
+
+      console.log("TCL: MySequence -> handle -> authUser", authUser);
+      let permissions: PermissionKey[] = [];
+      if (authUser) {
+        permissions = this.fetchUserPermissons(
+          _.get(authUser, "permissions"),
+          _.get(authUser, "role.permissions"),
+        );
+      }
+
+      const isAccessAllowed: boolean = await this.checkAuthorization(
+        permissions,
+      );
+      if (!isAccessAllowed) {
+        throw new HttpErrors.Forbidden(AuthorizeErrorKeys.NotAllowedAccess);
+      }
+
       const result = await this.invoke(route, args);
       this.send(response, result);
     } catch (err) {

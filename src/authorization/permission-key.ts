@@ -12,6 +12,8 @@ export const enum PermissionKey {
   // For deleting a user
   DeleteAnyUser = 'DeleteAnyUser',
 
+  ViewCount = 'ViewCount',
+
   // For accessing a role
   ViewRoles = 'ViewRoles',
   // For creating a role
