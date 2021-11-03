@@ -61,7 +61,7 @@
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^8.5.1",
     "loopback-connector-mongodb": "^4.1.0",
-    "validator": "^11.0.0"
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "@loopback/build": "^1.7.0",
