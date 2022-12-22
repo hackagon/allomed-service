@@ -59,7 +59,7 @@
     "@loopback/service-proxy": "^1.2.0",
     "bcrypt": "^3.0.6",
     "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "loopback-connector-mongodb": "^4.1.0",
     "validator": "^11.0.0"
   },
